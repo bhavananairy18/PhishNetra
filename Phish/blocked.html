@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Access Blocked - PhishNetra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blocked.css">
+</head>
+<body>
+    <div class="ambient-light"></div>
+    <div class="blocked-container">
+        <div class="blocked-icon">🛑</div>
+        <h1 class="glitch" data-text="Access Blocked">Access Blocked</h1>
+        <p class="description">This website is dangerous and may steal your data. Cybercriminals use deceptive websites to trick you into entering personal info such as passwords, credit card numbers, or OTPs.</p>
+        
+        <div class="score-panel">
+            <div class="score-label">Risk Score</div>
+            <div class="score-value-container">
+                <span id="risk-score" class="digital-flicker">--/100</span>
+            </div>
+        </div>
+        
+        <ul class="reasons-list" id="reasons-list">
+            <!-- Reasons will be injected here -->
+        </ul>
+        
+        <div class="btn-container">
+            <button class="btn btn-back" id="btn-back">Go Back (Safe)</button>
+        </div>
+    </div>
+    
+    <script src="blocked.js"></script>
+</body>
+</html>

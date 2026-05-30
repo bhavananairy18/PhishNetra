@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Suspicious Site Warning - PhishNetra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="warning.css">
+</head>
+<body>
+    <div class="ambient-light"></div>
+    <div class="warning-container">
+        <div class="warning-icon">⚠️</div>
+        <h1 class="glitch" data-text="Suspicious Activity Detected">Suspicious Activity Detected</h1>
+        <p class="description">PhishNetra has detected suspicious elements on this website. It may be unsafe to proceed, especially if you are asked to provide sensitive information like passwords or credit card details.</p>
+        
+        <div class="url-display" id="url-display">Loading...</div>
+        
+        <div class="score-panel">
+            <div class="score-label">Risk Score</div>
+            <div class="score-value-container">
+                <span id="score-display" class="digital-flicker">--</span><span class="max-score">/100</span>
+            </div>
+        </div>
+        
+        <ul class="reasons-list" id="reasons-list">
+            <!-- Reasons will be injected here -->
+        </ul>
+        
+        <div class="btn-container">
+            <button class="btn btn-deny" id="deny-btn">Go Back</button>
+            <button class="btn btn-continue" id="continue-btn">Continue</button>
+        </div>
+    </div>
+    
+    <script src="warning.js"></script>
+</body>
+</html>
