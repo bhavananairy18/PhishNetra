@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PhishNetra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="logo.png" alt="PhishNetra Logo" class="main-logo">
+        </div>
+        <label class="toggle-switch main-toggle-container">
+            <input type="checkbox" id="main-toggle" checked>
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <div class="content">
+        <div class="card status-card" id="status-card">
+            <div class="glow-bg" id="card-glow"></div>
+            <div class="card-content">
+                <h2 id="current-status">Analyzing...</h2>
+                <p id="current-domain" class="domain-text">...</p>
+
+                <div class="score-display">
+                    <span class="score-label">RISK SCORE</span>
+                    <span class="score-value" id="risk-score"><span class="score-number">--</span>/100</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card reasons-section" id="reasons-section">
+            <div class="reasons-header" id="reasons-toggle">
+                <h3>ANALYSIS DETAILS</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="reasons-body" id="reasons-body" style="display: none;">
+                <ul id="reasons-list">
+                    <li>Please wait...</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card settings-section">
+            <div class="setting-row">
+                <div>
+                    <strong>Protection Mode</strong>
+                    <p class="setting-desc">Proactively blocks dangerous sites.</p>
+                </div>
+                <label class="toggle-switch small">
+                    <input type="checkbox" id="protection-toggle" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
