@@ -1,0 +1,704 @@
+@property --border-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+body {
+    width: 380px;
+    margin: 0;
+    padding: 0;
+    font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    color: #e2e8f0;
+    background-color: #030507; /* Fallback base pitch black */
+    overflow-x: hidden;
+    position: relative;
+    box-sizing: border-box;
+    letter-spacing: 0.3px;
+    
+    /* Premium 2px Transparent Border clipping for Conic Glow */
+    border: 2px solid transparent;
+    transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+/* Base default state variables & Moving Cyber-Blue Outline */
+body {
+    --scan-line: rgba(59, 130, 246, 0.45);
+    --grid-color: rgba(59, 130, 246, 0.02);
+    
+    background: 
+        radial-gradient(circle at 50% 20%, #1e293b 0%, #030712 60%, #010204 100%) padding-box,
+        conic-gradient(from var(--border-angle), #3b82f6 0%, #1d4ed8 25%, transparent 50%, #1d4ed8 75%, #3b82f6 100%) border-box;
+    box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.2);
+    animation: rotateBorder 4s linear infinite;
+}
+
+/* Dynamic State-Based Ambient Glow Backgrounds, Colors, Grid, and Lasers */
+body.body-safe {
+    --scan-line: rgba(16, 185, 129, 0.55);
+    --grid-color: rgba(16, 185, 129, 0.035);
+    
+    background: 
+        radial-gradient(circle at 50% 12%, #059669 0%, #065f46 25%, #022c22 65%, #010403 100%) padding-box,
+        conic-gradient(from var(--border-angle), #00ff87 0%, #059669 25%, transparent 50%, #059669 75%, #00ff87 100%) border-box;
+    box-shadow: inset 0 0 14px rgba(16, 185, 129, 0.35);
+}
+
+body.body-suspicious {
+    --scan-line: rgba(249, 115, 22, 0.55);
+    --grid-color: rgba(249, 115, 22, 0.035);
+    
+    background: 
+        radial-gradient(circle at 50% 12%, #f97316 0%, #9a3412 25%, #431407 65%, #050200 100%) padding-box,
+        conic-gradient(from var(--border-angle), #ff7b00 0%, #d97706 25%, transparent 50%, #d97706 75%, #ff7b00 100%) border-box;
+    box-shadow: inset 0 0 14px rgba(249, 115, 22, 0.35);
+}
+
+body.body-dangerous {
+    --scan-line: rgba(239, 68, 68, 0.55);
+    --grid-color: rgba(239, 68, 68, 0.035);
+    
+    background: 
+        radial-gradient(circle at 50% 12%, #ef4444 0%, #991b1b 25%, #450a0a 65%, #050000 100%) padding-box,
+        conic-gradient(from var(--border-angle), #ff0055 0%, #dc2626 25%, transparent 50%, #dc2626 75%, #ff0055 100%) border-box;
+    box-shadow: inset 0 0 14px rgba(239, 68, 68, 0.35);
+}
+
+/* Dynamic Cybersecurity Panning Grid */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background-image: 
+        linear-gradient(var(--grid-color) 1.2px, transparent 1.2px),
+        linear-gradient(90deg, var(--grid-color) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+    background-position: center;
+    pointer-events: none;
+    animation: gridPan 30s linear infinite;
+    opacity: 0.8;
+}
+
+/* Sweeping Laser Scanline */
+.scanline {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--scan-line), transparent);
+    box-shadow: 0 0 12px var(--scan-line);
+    pointer-events: none;
+    z-index: 100;
+    animation: scanSweep 7s infinite linear;
+    opacity: 0.8;
+}
+
+/* Header Section */
+.header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 24px 8px 24px;
+    background: transparent;
+    
+    /* Staggered entrance */
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.logo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dashed Holographic Radar Targeting Ring behind Logo */
+.scanner-ring {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 1.5px dashed var(--scan-line);
+    box-shadow: 
+        0 0 15px rgba(59, 130, 246, 0.1), 
+        inset 0 0 15px rgba(59, 130, 246, 0.1);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+    animation: spinRing 25s linear infinite, pulseRing 4s ease-in-out infinite;
+}
+
+body.body-safe .scanner-ring {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.12), inset 0 0 15px rgba(16, 185, 129, 0.12);
+}
+body.body-suspicious .scanner-ring {
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.12), inset 0 0 15px rgba(249, 115, 22, 0.12);
+}
+body.body-dangerous .scanner-ring {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.12), inset 0 0 15px rgba(239, 68, 68, 0.12);
+}
+
+.main-logo {
+    height: 125px; /* Large high-tech display center hero */
+    object-fit: contain;
+    z-index: 2;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6)); /* Natural dark drop shadow - zero color filter on logo */
+}
+
+/* Absolute Power Toggle at Top Right */
+.main-toggle-container {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    z-index: 5;
+}
+
+/* Content Container */
+.content {
+    padding: 0 24px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Card - Global Design System */
+.card {
+    background: rgba(11, 14, 20, 0.85); /* Deep charcoal solid base */
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Reflective Silver Sheen Sweep across Card Background on Hover */
+.card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        transparent 100%
+    );
+    transform: skewX(-25deg);
+    transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.card:hover::after {
+    left: 150%;
+}
+
+/* Staggered Card Entrance Animations */
+.content > .card:nth-child(1) {
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+.content > .card:nth-child(2) {
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.18s forwards;
+}
+
+.content > .card:nth-child(3) {
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.26s forwards;
+}
+
+/* Breathing Dynamic Card Borders & Neon Glow Shadows */
+body.body-safe .card {
+    animation: cardGlowSafe 5s ease-in-out infinite;
+}
+body.body-suspicious .card {
+    animation: cardGlowSuspicious 5s ease-in-out infinite;
+}
+body.body-dangerous .card {
+    animation: cardGlowDangerous 5s ease-in-out infinite;
+}
+
+/* Status Card Component */
+.status-card {
+    text-align: center;
+    padding: 24px;
+}
+
+.status-card h2 {
+    margin: 0 0 6px 0;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.1rem;
+    font-weight: 800; /* Heavy futuristic display weight */
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    transition: color 0.4s ease, text-shadow 0.4s ease, letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Tactile Letter-Spacing Expansion on hover */
+.status-card:hover h2 {
+    letter-spacing: 3px;
+}
+
+/* Status Heading State-Based Colors and Stylish Threat-Adaptive Blinking Animations */
+.status-safe h2 {
+    color: #10b981; /* Saturated Emerald Green */
+    /* Calm breathing slow blink - Sped up to 1.5s */
+    animation: 
+        textPulseSafe 4s ease-in-out infinite, 
+        slowBlink 1.5s ease-in-out infinite;
+}
+
+.status-suspicious h2 {
+    color: #f97316; /* Vibrant Saturated Orange */
+    /* Steady warning pulse blink - Sped up to 0.8s */
+    animation: 
+        textPulseSuspicious 4s ease-in-out infinite, 
+        warningBlink 0.8s ease-in-out infinite;
+}
+
+.status-dangerous h2 {
+    color: #ef4444; /* Bright Cyber Red */
+    /* Aggressive scifi hazard double-flicker - Sped up to 0.4s */
+    animation: 
+        textPulseDangerous 4s ease-in-out infinite, 
+        dangerFlicker 0.4s infinite ease-in-out;
+}
+
+/* Domain Text */
+.domain-text {
+    margin: 0 0 20px 0;
+    color: #738496; /* Sleek slate-gray */
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-transform: lowercase;
+    word-break: break-all;
+    text-align: center;
+}
+
+/* Nested Risk Score Container */
+.score-display {
+    background: #06080b; /* Pitch black */
+    padding: 16px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.score-label {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    color: #5c6e80; /* Sleek muted gray label */
+    font-size: 0.85rem;
+    letter-spacing: 1.2px;
+}
+
+.score-value {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #ffffff; /* High contrast white value */
+    letter-spacing: 0.5px;
+    transition: text-shadow 0.4s ease;
+}
+
+/* Saturated matching text-shadow glows for the numerical risk value */
+body.body-safe .score-value {
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
+    animation: slowBlink 1.5s ease-in-out infinite;
+}
+body.body-suspicious .score-value {
+    text-shadow: 0 0 8px rgba(249, 115, 22, 0.35);
+    animation: warningBlink 0.8s ease-in-out infinite;
+}
+body.body-dangerous .score-value {
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
+    animation: dangerFlicker 0.4s infinite ease-in-out;
+}
+
+/* Expandable Analysis Details Section */
+.reasons-section {
+    border-radius: 16px;
+    background: rgba(11, 14, 20, 0.7);
+    backdrop-filter: blur(12px);
+}
+
+.reasons-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 16px 20px;
+}
+
+.reasons-header h3 {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    transition: color 0.4s ease;
+}
+
+/* Dynamic State-Based Headers for Analysis Details (Vibrant matching states) */
+body.body-safe .reasons-header h3 {
+    color: #10b981;
+}
+body.body-suspicious .reasons-header h3 {
+    color: #f97316;
+}
+body.body-dangerous .reasons-header h3 {
+    color: #ef4444;
+}
+
+.toggle-icon {
+    font-size: 11px;
+    color: #5c6e80;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Body Dropdown List */
+.reasons-body {
+    padding: 0 20px 16px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+ul {
+    margin: 12px 0 0 0;
+    padding-left: 18px;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+li {
+    margin-bottom: 8px;
+}
+
+li:last-child {
+    margin-bottom: 0;
+}
+
+/* Settings Protection Mode Section */
+.settings-section {
+    border-radius: 16px;
+    background: rgba(11, 14, 20, 0.7);
+    backdrop-filter: blur(12px);
+    padding: 16px 20px;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting-row strong {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.setting-desc {
+    margin: 4px 0 0 0;
+    font-size: 0.82rem;
+    color: #64748b;
+    max-width: 240px;
+    line-height: 1.4;
+}
+
+/* Premium High-Tech Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch.small {
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(6, 10, 15, 0.6);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 4px;
+    bottom: 3.5px;
+    background-color: #475569;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+}
+
+.toggle-switch.small .slider:before {
+    height: 14px;
+    width: 14px;
+    left: 4px;
+    bottom: 3.5px;
+}
+
+/* Checked Switch State with Active Reactor Breathing Pulse */
+input:checked + .slider {
+    border-color: #3b82f6; /* Premium Cyber-Blue glow outline */
+    background-color: rgba(59, 130, 246, 0.1);
+    animation: togglePulse 2s infinite ease-in-out;
+}
+
+input:checked + .slider:before {
+    transform: translateX(18px);
+    background-color: #3b82f6; /* Cyber-Blue knob */
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.85);
+}
+
+.toggle-switch.small input:checked + .slider:before {
+    transform: translateX(18px);
+}
+
+/* Disabled Switch State */
+input:disabled + .slider {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   ANIMATIONS & KEYFRAMES
+   ========================================================================== */
+
+/* Conic Glowing Outer-Border Travel Line Rotation */
+@keyframes rotateBorder {
+    to {
+        --border-angle: 360deg;
+    }
+}
+
+/* Cyber-Grid Diagonal Diagonal Scroll */
+@keyframes gridPan {
+    0% {
+        background-position: 0px 0px;
+    }
+    100% {
+        background-position: 48px 48px;
+    }
+}
+
+/* Dynamic Checked Switch Glowing Energy Reactor Breathing Pulse */
+@keyframes togglePulse {
+    0%, 100% {
+        box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        border-color: #3b82f6;
+    }
+    50% {
+        box-shadow: 0 0 16px rgba(59, 130, 246, 0.85);
+        border-color: #60a5fa;
+    }
+}
+
+/* Hologram Scanning Ring Rotate */
+@keyframes spinRing {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Hologram Scanning Ring Breathe Pulse */
+@keyframes pulseRing {
+    0%, 100% {
+        transform: scale(0.95);
+        opacity: 0.25;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+}
+
+/* Active Horizontal Scanning Laser Sweeper */
+@keyframes scanSweep {
+    0% {
+        top: 0%;
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* Staggered tactile slide-up and fade-in on mount */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dynamic State-Based Breathing Outlines & Soft Outer Glows */
+@keyframes cardGlowSafe {
+    0%, 100% {
+        border-color: rgba(16, 185, 129, 0.22);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 10px rgba(16, 185, 129, 0.04);
+    }
+    50% {
+        border-color: rgba(16, 185, 129, 0.42);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 18px rgba(16, 185, 129, 0.14);
+    }
+}
+
+@keyframes cardGlowSuspicious {
+    0%, 100% {
+        border-color: rgba(249, 115, 22, 0.22);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 10px rgba(249, 115, 22, 0.04);
+    }
+    50% {
+        border-color: rgba(249, 115, 22, 0.42);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 18px rgba(249, 115, 22, 0.14);
+    }
+}
+
+@keyframes cardGlowDangerous {
+    0%, 100% {
+        border-color: rgba(239, 68, 68, 0.22);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 10px rgba(239, 68, 68, 0.04);
+    }
+    50% {
+        border-color: rgba(239, 68, 68, 0.42);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 18px rgba(239, 68, 68, 0.14);
+    }
+}
+
+/* Dynamic Glowing Text Pulse Keyframes */
+@keyframes textPulseSafe {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(16, 185, 129, 0.55), 0 0 18px rgba(16, 185, 129, 0.25);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(16, 185, 129, 0.85), 0 0 30px rgba(16, 185, 129, 0.45);
+    }
+}
+
+@keyframes textPulseSuspicious {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(249, 115, 22, 0.55), 0 0 18px rgba(249, 115, 22, 0.25);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(249, 115, 22, 0.85), 0 0 30px rgba(249, 115, 22, 0.45);
+    }
+}
+
+@keyframes textPulseDangerous {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(239, 68, 68, 0.55), 0 0 18px rgba(239, 68, 68, 0.25);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(239, 68, 68, 0.85), 0 0 30px rgba(239, 68, 68, 0.45);
+    }
+}
+
+/* 🟢 Safe State: Calm breathing slow-blink */
+@keyframes slowBlink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.72;
+    }
+}
+
+/* 🟡 Suspicious State: Rhythmic warning pulse blink */
+@keyframes warningBlink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* 🔴 Dangerous State: Cyberpunk hazard double-flicker blink */
+@keyframes dangerFlicker {
+    0%, 24%, 48%, 100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+    12% {
+        opacity: 0.25;
+        filter: brightness(0.7);
+    }
+    36% {
+        opacity: 0.45;
+        filter: brightness(0.85);
+    }
+}
+
+/* Subtle data terminal micro-flickering effect */
+@keyframes textFlicker {
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    88% { opacity: 1; filter: brightness(1); }
+    89% { opacity: 0.94; filter: brightness(0.92); }
+    90% { opacity: 1; filter: brightness(1); }
+    91% { opacity: 0.92; filter: brightness(0.9); }
+    92% { opacity: 1; filter: brightness(1); }
+    93% { opacity: 0.96; filter: brightness(0.95); }
+    94% { opacity: 1; filter: brightness(1); }
+}
+
+/* Expansion panel dropdown */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
