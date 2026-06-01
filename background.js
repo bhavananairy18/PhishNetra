@@ -57,9 +57,9 @@ function calculateRisk(urlStr) {
     }
 
     // 2. Domain structure
-    if (url.href.length > 100) {
+    if (url.href.length > 25) {
       score += 15;
-      reasons.push('URL length is greater than 100 characters.');
+      reasons.push('URL length is greater than 25 characters.');
     }
 
     const domainParts = domain.split('.');
