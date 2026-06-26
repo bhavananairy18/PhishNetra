@@ -320,3 +320,108 @@ input:checked+.slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+/* Futuristic Segmented Progress Bar */
+.risk-meter-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    margin-top: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.meter-block {
+    height: 8px;
+    flex: 1;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Dynamic Active State Glows based on risk-level theme */
+.status-safe .meter-block.active,
+.body-safe .meter-block.active {
+    background-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 4px rgba(16, 185, 129, 0.4);
+}
+
+.status-suspicious .meter-block.active,
+.body-suspicious .meter-block.active {
+    background-color: #f97316;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.8), 0 0 4px rgba(249, 115, 22, 0.4);
+}
+
+.status-dangerous .meter-block.active,
+.body-dangerous .meter-block.active {
+    background-color: #ef4444;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.9), 0 0 4px rgba(239, 68, 68, 0.5);
+}
+
+/* Website Information Card */
+.info-section {
+    padding: 16px 20px !important;
+}
+
+.info-header h3 {
+    margin: 0 0 12px 0;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #5c6e80; /* Muted tech gray label */
+    transition: color 0.4s ease;
+}
+
+/* Dynamic State-Based Headers for Info section */
+.status-safe .info-header h3,
+.body-safe .info-header h3 {
+    color: #10b981;
+}
+.status-suspicious .info-header h3,
+.body-suspicious .info-header h3 {
+    color: #f97316;
+}
+.status-dangerous .info-header h3,
+.body-dangerous .info-header h3 {
+    color: #ef4444;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    padding-top: 12px;
+}
+
+.info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+}
+
+.info-label {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-val {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    word-break: break-all;
+    max-width: 100%;
+}
+
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

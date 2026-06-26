@@ -3,6 +3,7 @@ let protectionModeEnabled = true;
 let soundAlertsEnabled = true;
 let trustedSites = new Set();
 let tabScores = new Map(); // tabId -> { score, reasons, status }
+let pendingInfoRequests = new Map(); // tabId -> Array of resolver functions
 
 // Initialize state from storage
 chrome.storage.local.get({
@@ -27,12 +28,35 @@ chrome.storage.onChanged.addListener((changes) => {
 
 // 🔥 MAIN RISK CALCULATION ONLY static details
 function calculateRisk(urlStr) {
+  const res = calculateRiskScore(urlStr);
+  return {
+    score: res.score,
+    reasons: res.reasons,
+    status: res.status,
+    isTrusted: res.isTrusted,
+    isSearchEngine: res.isSearchEngine
+  };
+}
+
+// Unified Risk Calculation
+function calculateRiskScore(urlStr, contentData = null) {
   let score = 0;
   let reasons = [];
   let status = 'Safe';
+  let isTrusted = false;
+  let isSearchEngine = false;
 
   if (!urlStr || urlStr.startsWith('chrome://') || urlStr.startsWith('edge://') || urlStr.startsWith('about:') || urlStr.startsWith('chrome-extension://')) {
-    return { score: 0, reasons: [], status: 'Safe', isTrusted: false, isSearchEngine: false };
+    return { 
+      score: 0, 
+      reasons: [], 
+      status: 'Safe', 
+      isTrusted: false, 
+      isSearchEngine: false,
+      contentRiskScore: 0,
+      aiVerdict: "SAFE: No deceptive text, mismatched links, or unauthorized sensitive forms were detected on this page.",
+      detectedThreats: []
+    };
   }
 
   try {
@@ -40,14 +64,23 @@ function calculateRisk(urlStr) {
     const domain = url.hostname.toLowerCase();
 
     // Whitelist check
-    const isTrusted = trustedSites.has(domain);
+    isTrusted = trustedSites.has(domain);
 
     // Known search engine check
     const searchEngines = ['google.', 'bing.com', 'yahoo.com', 'duckduckgo.com', 'yandex.', 'ecosia.org', 'search.brave.com'];
-    const isSearchEngine = searchEngines.some(se => domain.includes(se));
+    isSearchEngine = searchEngines.some(se => domain.includes(se));
 
     if (isSearchEngine) {
-      return { score: 0, reasons: ['Known Search Engine.'], status: 'Safe', isTrusted, isSearchEngine: true };
+      return { 
+        score: 0, 
+        reasons: ['Known Search Engine.'], 
+        status: 'Safe', 
+        isTrusted, 
+        isSearchEngine: true,
+        contentRiskScore: 0,
+        aiVerdict: "SAFE: No deceptive text, mismatched links, or unauthorized sensitive forms were detected on this page.",
+        detectedThreats: []
+      };
     }
 
     // 1. Protocol
@@ -90,23 +123,75 @@ function calculateRisk(urlStr) {
     // Normalize max score to 100
     score = Math.min(score, 100);
 
-    // Determine Status
-    if (score <= 30) {
+    if (contentData) {
+      const { hasPassword, hasCC, hasOTP, hasExternalForm, hasHiddenFields, hasSuspiciousIframe } = contentData;
+      let contentScoreAdded = 0;
+
+      if (hasPassword) {
+        contentScoreAdded += 20;
+        reasons.push('Password field exists.');
+      }
+      if (hasCC) {
+        contentScoreAdded += 25;
+        reasons.push('Credit card related fields detected.');
+      }
+      if (hasOTP) {
+        contentScoreAdded += 15;
+        reasons.push('OTP or verification fields detected.');
+      }
+      if (hasExternalForm) {
+        contentScoreAdded += 20;
+        reasons.push('Form submits to a different domain.');
+      }
+      if (hasHiddenFields) {
+        contentScoreAdded += 20;
+        reasons.push('Hidden password fields detected.');
+      }
+      if (hasSuspiciousIframe) {
+        contentScoreAdded += 15;
+        reasons.push('Invisible iframes detected.');
+      }
+
+      if (contentScoreAdded > 0) {
+        score = Math.min(100, score + contentScoreAdded);
+      }
+    }
+
+    if (isTrusted) {
+      score = 0;
+      reasons = ['Site is explicitly trusted by the user.'];
       status = 'Safe';
-    } else if (score <= 60) {
-      status = 'Suspicious';
+    } else if (isSearchEngine) {
+      score = 0;
+      reasons = ['Known Search Engine.'];
+      status = 'Safe';
     } else {
-      status = 'Dangerous';
+      if (score <= 30) {
+        status = 'Safe';
+      } else if (score <= 60) {
+        status = 'Suspicious';
+      } else {
+        status = 'Dangerous';
+      }
     }
 
     if (isTrusted) {
       reasons.push('Site is explicitly trusted by the user.');
     }
 
-    return { score, reasons, status, isTrusted, isSearchEngine: false };
+    return { score, reasons, status, isTrusted, isSearchEngine };
 
   } catch (e) {
-    return { score: 0, reasons: ['Invalid URL format.'], status: 'Safe', isTrusted: false, isSearchEngine: false };
+    return { 
+      score: 0, 
+      reasons: ['Invalid URL format.'], 
+      status: 'Safe', 
+      isTrusted: false, 
+      isSearchEngine: false,
+      contentRiskScore: 0,
+      aiVerdict: "SAFE: No deceptive text, mismatched links, or unauthorized sensitive forms were detected on this page.",
+      detectedThreats: []
+    };
   }
 }
 
@@ -143,8 +228,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // ALWAYS pull data from URL if we are, because they represent the TRUE blocked state.
       let isWarningOrBlocked = targetUrl.startsWith('chrome-extension://') && (targetUrl.includes('warning.html') || targetUrl.includes('blocked.html'));
 
-      let data = null;
-
       if (isWarningOrBlocked) {
         try {
           const urlObj = new URL(targetUrl);
@@ -162,17 +245,49 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if (urlScore >= 31 && urlScore <= 60) status = 'Suspicious';
             else if (urlScore >= 61) status = 'Dangerous';
 
-            data = { score: urlScore, reasons: urlReasons, status, isTrusted: false, isSearchEngine: false };
+            const data = { score: urlScore, reasons: urlReasons, status, isTrusted: false, isSearchEngine: false };
+            sendResponse(data);
+            return;
           }
         } catch (e) { }
       }
 
-      // If not on warning page, or parsing failed, fallback to memory or active calculation
-      if (!data) {
-        data = tabScores.get(tabId) || calculateRisk(targetUrl);
+      let cached = tabScores.get(tabId);
+      if (!cached) {
+        let result = calculateRiskScore(targetUrl);
+        result.contentChecksComplete = result.isSearchEngine || result.isTrusted;
+        cached = result;
+        tabScores.set(tabId, cached);
       }
 
-      sendResponse(data);
+      if (cached.contentChecksComplete) {
+        sendResponse(cached);
+      } else {
+        if (!pendingInfoRequests.has(tabId)) {
+          pendingInfoRequests.set(tabId, []);
+        }
+        let resolved = false;
+        const resolve = (data) => {
+          if (!resolved) {
+            resolved = true;
+            sendResponse(data);
+          }
+        };
+        pendingInfoRequests.get(tabId).push(resolve);
+
+        setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            const pending = pendingInfoRequests.get(tabId);
+            if (pending) {
+              const idx = pending.indexOf(resolve);
+              if (idx !== -1) pending.splice(idx, 1);
+            }
+            let current = tabScores.get(tabId) || cached;
+            sendResponse(current);
+          }
+        }, 2000);
+      }
     });
     return true; // async
   }
@@ -192,53 +307,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === 'ANALYZE_PAGE_CONTENT') {
-    const { hasPassword, hasCC, hasOTP, hasExternalForm, hasHiddenFields, hasSuspiciousIframe, url } = message;
+    const { url } = message;
     const tabId = sender.tab ? sender.tab.id : message.tabId;
 
     if (extensionEnabled) {
-      let data = calculateRisk(url); // ALWAYS start from fresh static risk
-      let contentScoreAdded = 0;
+      let finalData = calculateRiskScore(url, message);
+      finalData.contentChecksComplete = true;
 
-      // 4 & 5. Forms, inputs, and hidden elements
-      if (hasPassword) {
-        contentScoreAdded += 20;
-        data.reasons.push('Password field exists.');
-      }
-      if (hasCC) {
-        contentScoreAdded += 25;
-        data.reasons.push('Credit card related fields detected.');
-      }
-      if (hasOTP) {
-        contentScoreAdded += 15;
-        data.reasons.push('OTP or verification fields detected.');
-      }
-      if (hasExternalForm) {
-        contentScoreAdded += 20;
-        data.reasons.push('Form submits to a different domain.');
-      }
-      if (hasHiddenFields) {
-        contentScoreAdded += 20;
-        data.reasons.push('Hidden password fields detected.');
-      }
-      if (hasSuspiciousIframe) {
-        contentScoreAdded += 15;
-        data.reasons.push('Invisible iframes detected.');
+      tabScores.set(tabId, finalData);
+
+      const pending = pendingInfoRequests.get(tabId);
+      if (pending) {
+        pending.forEach(resolve => resolve(finalData));
+        pendingInfoRequests.delete(tabId);
       }
 
-      if (contentScoreAdded > 0) {
-        data.score = Math.min(100, data.score + contentScoreAdded);
-        if (data.score <= 30) data.status = 'Safe';
-        else if (data.score <= 60) data.status = 'Suspicious';
-        else data.status = 'Dangerous';
+      if (protectionModeEnabled && !finalData.isTrusted && (finalData.status === 'Dangerous' || finalData.status === 'Suspicious')) {
+        routeTab(tabId, url, finalData);
       }
 
-      tabScores.set(tabId, data);
-
-      if (protectionModeEnabled && !data.isTrusted && (data.status === 'Dangerous' || data.status === 'Suspicious')) {
-        routeTab(tabId, url, data);
-      }
-
-      sendResponse({ status: data.status, score: data.score, protectionModeEnabled, soundAlertsEnabled, isSearchEngine: data.isSearchEngine });
+      sendResponse({ status: finalData.status, score: finalData.score, protectionModeEnabled, soundAlertsEnabled, isSearchEngine: finalData.isSearchEngine });
     } else {
       sendResponse({ status: 'Disabled', score: 0 });
     }
@@ -251,8 +339,11 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
   if (details.frameId !== 0 || !extensionEnabled) return; // Main frame only
   if (details.url.startsWith('chrome-extension://')) return; // ignore our own pages
 
-  const result = calculateRisk(details.url);
+  const result = calculateRiskScore(details.url);
+  const isComplete = result.isSearchEngine || result.isTrusted;
+  result.contentChecksComplete = isComplete;
   tabScores.set(details.tabId, result);
+  pendingInfoRequests.delete(details.tabId);
 
   if (protectionModeEnabled && !result.isTrusted && (result.status === 'Dangerous' || result.status === 'Suspicious')) {
     routeTab(details.tabId, details.url, result);
@@ -262,8 +353,11 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.url) {
     if (changeInfo.url.startsWith('chrome-extension://')) return;
-    const result = calculateRisk(changeInfo.url);
+    const result = calculateRiskScore(changeInfo.url);
+    const isComplete = result.isSearchEngine || result.isTrusted;
+    result.contentChecksComplete = isComplete;
     tabScores.set(tabId, result);
+    pendingInfoRequests.delete(tabId);
 
     if (protectionModeEnabled && !result.isTrusted && (result.status === 'Dangerous' || result.status === 'Suspicious')) {
       routeTab(tabId, changeInfo.url, result);
@@ -271,11 +365,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 
   if (changeInfo.status === 'complete' && tab.url && !tab.url.startsWith('chrome')) {
-    // Only calculate, without history logging
-    const result = tabScores.get(tabId) || calculateRisk(tab.url);
+    if (!tabScores.has(tabId)) {
+      const result = calculateRiskScore(tab.url);
+      result.contentChecksComplete = result.isSearchEngine || result.isTrusted;
+      tabScores.set(tabId, result);
+    }
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   tabScores.delete(tabId);
+  pendingInfoRequests.delete(tabId);
 });

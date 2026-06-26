@@ -35,6 +35,52 @@
                     <span class="score-label">RISK SCORE</span>
                     <span class="score-value" id="risk-score">--/100</span>
                 </div>
+
+                <!-- Futuristic Segmented Progress Bar -->
+                <div class="risk-meter-bar" id="risk-meter-bar">
+                    <div class="meter-block" data-index="1"></div>
+                    <div class="meter-block" data-index="2"></div>
+                    <div class="meter-block" data-index="3"></div>
+                    <div class="meter-block" data-index="4"></div>
+                    <div class="meter-block" data-index="5"></div>
+                    <div class="meter-block" data-index="6"></div>
+                    <div class="meter-block" data-index="7"></div>
+                    <div class="meter-block" data-index="8"></div>
+                    <div class="meter-block" data-index="9"></div>
+                    <div class="meter-block" data-index="10"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Content Scan Card -->
+        <div class="card ai-analysis-section" id="ai-analysis-card" style="display: none;">
+            <div class="ai-header">
+                <div class="ai-title-container">
+                    <span class="ai-pulse"></span>
+                    <h3>AI CONTENT SCAN</h3>
+                </div>
+                <span class="ai-badge" id="ai-verdict-badge">SAFE</span>
+            </div>
+            <div class="ai-body">
+                <div class="ai-metrics">
+                    <div class="ai-metric-item">
+                        <span class="metric-label">CONTENT RISK</span>
+                        <span class="metric-val" id="ai-content-score">0%</span>
+                    </div>
+                    <div class="ai-metric-item">
+                        <span class="metric-label">SCAN THREATS</span>
+                        <span class="metric-val" id="ai-threats-count">0 Detected</span>
+                    </div>
+                </div>
+                
+                <div class="ai-verdict-box">
+                    <span class="verdict-label">AI VERDICT</span>
+                    <p class="verdict-text" id="ai-verdict-text">Analyzing page content...</p>
+                </div>
+                
+                <div class="threat-badges" id="threat-badges-container">
+                    <!-- Small neon badges for threats -->
+                </div>
             </div>
         </div>
 
@@ -48,6 +94,27 @@
                 <ul id="reasons-list">
                     <li>Please wait...</li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- Website Information Card -->
+        <div class="card info-section">
+            <div class="info-header">
+                <h3>WEBSITE INFORMATION</h3>
+            </div>
+            <div class="info-grid">
+                <div class="info-col">
+                    <span class="info-label">DOMAIN</span>
+                    <span class="info-val" id="info-domain">...</span>
+                </div>
+                <div class="info-col">
+                    <span class="info-label">SSL STATUS</span>
+                    <span class="info-val" id="info-ssl">...</span>
+                </div>
+                <div class="info-col">
+                    <span class="info-label">DOMAIN AGE</span>
+                    <span class="info-val" id="info-age">...</span>
+                </div>
             </div>
         </div>
 
