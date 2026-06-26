@@ -45,52 +45,25 @@
             </div>
         </div>
 
-        <div class="card reasons-section" id="reasons-section">
-            <div class="reasons-header" id="reasons-toggle">
-                <h3>ANALYSIS DETAILS</h3>
-                <span class="toggle-icon">▼</span>
+        <div class="card reasons-section" id="reasons-section" style="padding: 16px 20px;">
+            <div class="info-grid" style="border-top: none; padding-top: 0; margin-bottom: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center;">
+                <div class="info-col" style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                    <span class="info-label" style="font-size: 0.68rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">SSL STATUS</span>
+                    <span class="info-val" id="info-ssl" style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1;">...</span>
+                </div>
+                <div class="info-col" style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                    <span class="info-label" style="font-size: 0.68rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">DOMAIN AGE</span>
+                    <span class="info-val" id="info-age" style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1;">...</span>
+                </div>
             </div>
-            <div class="reasons-body" id="reasons-body" style="display: none;">
-                <ul id="reasons-list">
+            
+            <div style="font-size: 0.72rem; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; border-top: 1px solid rgba(255, 255, 255, 0.03); padding-top: 12px; margin-bottom: 8px;">DETECTED RISK SIGNALS</div>
+            
+            <div class="signals-container">
+                <ul id="reasons-list" style="margin: 0; padding-left: 18px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
                     <li>Please wait...</li>
                 </ul>
             </div>
-        </div>
-
-        <!-- Website Information Card -->
-        <div class="card info-section">
-            <div class="info-header">
-                <h3>WEBSITE INFORMATION</h3>
-            </div>
-            <div class="info-grid">
-                <div class="info-col">
-                    <span class="info-label">DOMAIN</span>
-                    <span class="info-val" id="info-domain">...</span>
-                </div>
-                <div class="info-col">
-                    <span class="info-label">SSL STATUS</span>
-                    <span class="info-val" id="info-ssl">...</span>
-                </div>
-                <div class="info-col">
-                    <span class="info-label">DOMAIN AGE</span>
-                    <span class="info-val" id="info-age">...</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="card settings-section">
-            <div class="setting-row">
-                <div>
-                    <strong>Protection Mode</strong>
-                    <p class="setting-desc">Proactively blocks dangerous sites.</p>
-                </div>
-                <label class="toggle-switch small">
-                    <input type="checkbox" id="protection-toggle" checked>
-                    <span class="slider round"></span>
-                </label>
-            </div>
-
-
         </div>
     </div>
 

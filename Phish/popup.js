@@ -40,20 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const reasonsToggle = document.getElementById('reasons-toggle');
-    if (reasonsToggle) {
-        reasonsToggle.addEventListener('click', function() {
-            const body = document.getElementById('reasons-body');
-            const icon = this.querySelector('.toggle-icon');
-            if (body.style.display === 'none') {
-                body.style.display = 'block';
-                icon.textContent = '▲';
-            } else {
-                body.style.display = 'none';
-                icon.textContent = '▼';
-            }
-        });
-    }
+
 
 
     function toggleUIState(isEnabled) {
@@ -63,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStatus.style.color = '#64748b';
             riskScore.textContent = '--/100';
             reasonsList.innerHTML = '<li>PhishNetra is currently turned off.</li>';
-            protectionToggle.disabled = true;
+            if (protectionToggle) protectionToggle.disabled = true;
 
             // Clear progress blocks
             document.querySelectorAll('.meter-block').forEach(b => b.classList.remove('active'));
@@ -76,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sslEl) sslEl.textContent = '...';
             if (ageEl) ageEl.textContent = '...';
         } else {
-            protectionToggle.disabled = false;
+            if (protectionToggle) protectionToggle.disabled = false;
             fetchTabInfo();
         }
     }
